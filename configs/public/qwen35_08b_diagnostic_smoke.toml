@@ -1,0 +1,77 @@
+[run]
+name = "public-qwen35-08b-diagnostic-smoke"
+seed = 20260511
+output_dir = "runs"
+
+[model]
+name = "Qwen/Qwen3.5-0.8B-Base"
+trust_remote_code = true
+device = "auto"
+model_class = "causal-lm"
+dtype = "bfloat16"
+device_map = "none"
+low_cpu_mem_usage = true
+local_files_only = false
+
+[dataset]
+name = "yahma/alpaca-cleaned"
+split = "train"
+train_size = 16
+probe_size = 8
+validation_size = 8
+max_length = 64
+train_batch_size = 1
+probe_batch_size = 1
+validation_batch_size = 2
+instruction_field = "instruction"
+input_field = "input"
+output_field = "output"
+
+[lora]
+rank = 4
+alpha = 8
+dropout = 0.0
+target_modules = [
+  "q_proj",
+  "k_proj",
+  "v_proj",
+  "o_proj",
+  "gate_proj",
+  "up_proj",
+  "down_proj",
+]
+
+[optimizer]
+lr = 1e-4
+weight_decay = 0.0
+betas = [0.9, 0.999]
+eps = 1e-8
+
+[pilot0_lora]
+steps = 5
+lambda_v = 1.0
+probe_k = 1
+tau_delta = 0.0
+gamma = 0.01
+validation_interval = 1
+loss_spike_threshold = 0.5
+future_windows = [1]
+update_mode = "adamw"
+control_mode = "off"
+verification_horizon_fraction = 0.0
+alpha_min = 0.0
+accepted_like_threshold = 0.8
+cga_mode = "off"
+cga_trigger_fraction = 0.3
+cga_warmup_steps = 20
+cga_score_window = 50
+cga_record_always_ga2 = false
+cga_improvement_margin = 0.0
+control_trigger_fraction = 0.25
+control_warmup_steps = 30
+control_score_window = 50
+control_damp_factor = 0.5
+control_fixed_period = 4
+control_verify_improvement = false
+control_improvement_margin = 0.0
+control_extra_policy = "average_grad"
